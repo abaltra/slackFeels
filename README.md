@@ -1,2 +1,2 @@
-# TwitterFeels
-Live retrieval of twitter data and sentiment analysis
+# SlackFeels
+Live retrieval of slack data and sentiment analysis
