@@ -11,6 +11,12 @@
 package 'python-dev'
 package 'python-pip'
 package 'vim'
+package 'rabbitmq-server'
+
+execute 'pip install celery' do
+	command 'pip install -U celery'
+	action :run
+end
 
 execute 'pip install textblob' do
 	command 'pip install -U textblob'
