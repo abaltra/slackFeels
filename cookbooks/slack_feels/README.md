@@ -1,17 +1,11 @@
 slackFeels Cookbook
 =====================
-TODO: Enter the cookbook description here.
-
-e.g.
-This cookbook makes your favorite breakfast sandwich.
+This cookbook sets up a vagrant machine ready to run SlackFeels
 
 Requirements
 ------------
-TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
+Vagrant
 
-e.g.
-#### packages
-- `toaster` - slack_feels needs toaster to brown your bagel.
 
 Attributes
 ----------
