@@ -1,4 +1,4 @@
-fuel_sniffer Cookbook
+slackFeels Cookbook
 =====================
 TODO: Enter the cookbook description here.
 
@@ -18,7 +18,7 @@ Attributes
 TODO: List you cookbook attributes here.
 
 e.g.
-#### fuel_sniffer::default
+#### sackFeels::default
 <table>
   <tr>
     <th>Key</th>
@@ -36,7 +36,7 @@ e.g.
 
 Usage
 -----
-#### fuel_sniffer::default
+#### slackFeels::default
 TODO: Write usage instructions for each cookbook.
 
 e.g.
@@ -65,4 +65,4 @@ e.g.
 
 License and Authors
 -------------------
-Authors: TODO: List authors
+Authors: Alejandro Baltra
