@@ -13,6 +13,11 @@ package 'python-pip'
 package 'vim'
 package 'rabbitmq-server'
 
+execute 'pip install pika' do
+	command 'pip install -U pika'
+	action :run
+end
+
 execute 'pip install celery' do
 	command 'pip install -U celery'
 	action :run
