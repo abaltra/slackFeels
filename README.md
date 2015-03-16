@@ -11,7 +11,11 @@ Finally
 ```
 vagrant ssh
 cd /slackFeels/
-python slackFeels.py
+```
+You must run 2 workers to see this functioning, one that receives the data from Slack and another that pops it from the queue and analizes it.
+```
+python slackPublisher.py
+python slackConsumer.py
 ```
 
 And as you write messages in your slack channel, you should start seeing output in the console.
