@@ -5,8 +5,9 @@ import json
 import ConfigParser
 from slackclient import SlackClient
 import time
+from sets import Set
 
-LOG_FORMAT = ('%(levelname) -2s %(asctime)s -5d: %(message)s')
+LOG_FORMAT = ('%(levelname) -2s %(asctime)s: %(message)s')
 LOGGER = logging.getLogger(__name__)
 
 class SlackPublisher(object):
@@ -31,6 +32,7 @@ class SlackPublisher(object):
 		self._stopping = False
 		self._url = amqp_url
 		self._closing = False
+		self._channels = Set([])
 
 	def connect(self):
 		LOGGER.info('Connecting to %s', self._url)
@@ -132,21 +134,41 @@ class SlackPublisher(object):
 		self.enable_delivery_confirmations()
 		self.start_slack_communications()
 
+	def get_slack_channels(self, slack_client):
+		LOGGER.info('Creating channels list')
+		channels_data = json.loads(slack_client.api_call('channels.list', exclude_archived=1))
+		[self._channels.add(channel.get(u'id')) for channel in channels_data.get(u'channels', [])]
+		LOGGER.info('Channels list created. There\'s a total of %i channels', len(self._channels))
+
 	def start_slack_communications(self):
 		self.loadConfig()
 		sc = SlackClient(SLACK_TOKEN)
 
+		self.get_slack_channels(sc)
+		
 		if sc.rtm_connect():
 			while True:
 				messages = sc.rtm_read()
 				for message in messages:
 					if (message.get(u'type', None) == 'message'):
 						text = message.get(u'text', None)
-						if text is None:
+						if text is None or message.get(u'channel', None) not in self._channels:
+							LOGGER.info('Private message or message with no text received')
 							continue
 						self.publish_message({'text': message.get(u'text', None), 
 											'channel': message.get(u'channel', None), 
 											'timestamp': message.get(u'ts', None)})
+					elif (message.get(u'type', None) == 'channel_created'):
+						try:
+							if message.get(u'channel', None).get(u'is_channel', None):
+								if message.get(u'channel').get(u'id') not in self._channels:
+									LOGGER.info('New Channel created. Attempting to join channel %s', message.get(u'channel').get(u'name'))
+									sc.api_call('channels.join', name=message.get(u'channel').get(u'name'))
+									self._channels.add(message.get(u'channel').get(u'id'))
+						except:
+							LOGGER.error('Could not retrieve channel data')
+					else:
+						LOGGER.info('Different kind of message')
 				time.sleep(1)
 		else:
 			LOGGER.ERROR('Slack connection failed with token %s', SLACK_TOKEN)
