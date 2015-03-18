@@ -12,6 +12,8 @@ package 'python-dev'
 package 'python-pip'
 package 'vim'
 package 'rabbitmq-server'
+package 'redis-server'
+package 'mongodb'
 
 execute 'pip install pika' do
 	command 'pip install -U pika'
@@ -35,5 +37,10 @@ end
 
 execute 'python -m textblob.download_corpora' do
 	command 'python -m nltk.downloader -d /usr/share/nltk_data all'
+	action :run
+end
+
+execute 'pip install pymongo' do
+	command 'pip install -U pymongo'
 	action :run
 end

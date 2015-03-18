@@ -3,16 +3,21 @@ import logging
 import pika
 import json
 from textblob import TextBlob
+from pymongo import MongoClient
+import ConfigParser
 
 LOG_FORMAT = ('%(levelname) -2s %(asctime)s -5d: %(message)s')
 LOGGER = logging.getLogger(__name__)
-
 
 class MessageConsumer(object):
     EXCHANGE = 'message'
     EXCHANGE_TYPE = 'topic'
     QUEUE = 'text'
     ROUTING_KEY = 'example.text'
+
+    SETTINGS = None
+    CHANNELS_INFO = None
+    DB = None
 
     def __init__(self, amqp_url):
         self._connection = None
@@ -100,9 +105,14 @@ class MessageConsumer(object):
 
     def analyzeMessage(self, message):
         text = json.loads(message).get(u'text', None)
+        channel = json.loads(message).get(u'channel', None)
         blob = TextBlob(text)
+        added_polarity = 0
         for sentence in blob.sentences:
             LOGGER.info('Sentence "%s"\'s polarity is %f', sentence, sentence.sentiment.polarity)
+            added_polarity += sentence.sentiment.polarity
+        self._save_channel_data({'channel_id': channel, 'polarity': added_polarity/len(blob.sentences)})
+
 
     def on_cancelok(self, unused_frame):
         self.close_channel()
@@ -135,10 +145,36 @@ class MessageConsumer(object):
         self.stop_consuming()
         self._connection.ioloop.start()
 
+    def _loadConfig(self):
+        global SETTINGS, DB
+        SETTINGS = ConfigParser.ConfigParser()
+        SETTINGS.read('config.ini')
+        DB = self._loadDB(SETTINGS)
+        LOGGER.info('Settings loaded')
+
+    def _loadDB(self, settings):
+        try:
+            LOGGER.info('Loading database %s:%s/%s', settings.get('db', 'host'), settings.get('db', 'port'), settings.get('db', 'name'))
+            client = MongoClient(settings.get('db', 'host'), int(settings.get('db', 'port')))
+            return client[settings.get('db', 'name')]
+        except:
+            LOGGER.error('Could not load database')
+            self.stop();
+
+    def _save_channel_data(self, data_pack):
+        global SETTINGS, DB
+        collection = DB.channels
+        LOGGER.info('Saving data %s into %s:%s', data_pack, SETTINGS.get('db', 'name'), 'channels')
+        print collection
+        print collection.update
+        collection.update({ 'organization': SETTINGS.get('organization', 'name'), 'channel_id': data_pack.get('channel_id', 'fail_channel')},
+            {'$inc': {'total_messages': 1, 'polarity': data_pack.get('polarity', 0.0)}}, upsert=True)
+
 def main():
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
     consumer = MessageConsumer('amqp://guest:guest@localhost:5672/%2F')
     try:
+        consumer._loadConfig()
         consumer.run()
     except KeyboardInterrupt:
         consumer.stop()

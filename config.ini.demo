@@ -1,2 +1,10 @@
+[organization]
+name: TheTwoBeards
+
 [slack]
 token: slack_token
+
+[db]
+host: localhost
+port: 27017
+name: feels_dev
