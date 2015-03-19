@@ -106,12 +106,14 @@ class MessageConsumer(object):
     def analyzeMessage(self, message):
         text = json.loads(message).get(u'text', None)
         channel = json.loads(message).get(u'channel', None)
+        timestamp = json.loads(message).get(u'timestamp', None)
         blob = TextBlob(text)
         added_polarity = 0
         for sentence in blob.sentences:
             LOGGER.info('Sentence "%s"\'s polarity is %f', sentence, sentence.sentiment.polarity)
             added_polarity += sentence.sentiment.polarity
         self._save_channel_data({'channel_id': channel, 'polarity': added_polarity/len(blob.sentences)})
+        self._save_message_info({'channel_id': channel, 'polarity': added_polarity/len(blob.sentences), 'timestamp': timestamp})
 
 
     def on_cancelok(self, unused_frame):
@@ -164,11 +166,17 @@ class MessageConsumer(object):
     def _save_channel_data(self, data_pack):
         global SETTINGS, DB
         collection = DB.channels
+        key = SETTINGS.get('organization', 'name') + ':' + data_pack.get('channel_id', 'fail_channel') + ':aggregated'
         LOGGER.info('Saving data %s into %s:%s', data_pack, SETTINGS.get('db', 'name'), 'channels')
-        print collection
-        print collection.update
-        collection.update({ 'organization': SETTINGS.get('organization', 'name'), 'channel_id': data_pack.get('channel_id', 'fail_channel')},
+        collection.update({ 'key': key },
             {'$inc': {'total_messages': 1, 'polarity': data_pack.get('polarity', 0.0)}}, upsert=True)
+
+    def _save_message_info(self, data_pack):
+        global SETTINGS, DB
+        collection = DB.channels
+        key = SETTINGS.get('organization', 'name') + ':' + data_pack.get('channel_id', 'fail_channel')
+        LOGGER.info('Saving single message data: %s', json.dumps(data_pack))
+        collection.insert({'key': key, 'polarity': data_pack.get('polarity', 0.0), 'timestamp': data_pack.get('timestamp', 0.0)})
 
 def main():
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
