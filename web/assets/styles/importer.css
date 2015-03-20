@@ -1,0 +1,90 @@
+/**
+ * importer.less
+ *
+ * By default, new Sails projects are configured to compile this file
+ * from LESS to CSS.  Unlike CSS files, LESS files are not compiled and
+ * included automatically unless they are imported below.
+ *
+ * The LESS files imported below are compiled and included in the order
+ * they are listed.  Mixins, variables, etc. should be imported first
+ * so that they can be accessed by subsequent LESS stylesheets.
+ *
+ * (Just like the rest of the asset pipeline bundled in Sails, you can
+ * always omit, customize, or replace this behavior with SASS, SCSS,
+ * or any other Grunt tasks you like.)
+ */
+html,
+body {
+  height: 100%;
+}
+body {
+  padding-top: 100px;
+  font-family: 'Open Sans', sans-serif;
+}
+.content {
+  padding-top: 61px;
+  padding-bottom: 100px;
+}
+.notifications .selected i {
+  color: #5cb85c;
+}
+.notifications .not-selected i {
+  color: #333;
+}
+#loading-bar .bar {
+  background: #ed303c;
+}
+#loading-bar-spinner .spinner-icon {
+  border-top-color: #ed303c;
+  border-left-color: #ed303c;
+}
+#loading-bar .peg {
+  -moz-box-shadow: #ed303c 1px 0 6px 1px;
+  -ms-box-shadow: #ed303c 1px 0 6px 1px;
+  -webkit-box-shadow: #ed303c 1px 0 6px 1px;
+  box-shadow: #ed303c 1px 0 6px 1px;
+}
+.navbar-fixed-top {
+  padding-left: 60px;
+  padding-right: 60px;
+}
+.navbar-inverse {
+  background-color: #FFFFFF;
+  border-color: #EEEEEE;
+  color: #ed303c;
+  background-image: linear-gradient(to bottom, #ffffff 0, #ffffff 100%);
+}
+.navbar-inverse .navbar-brand {
+  color: #ed303c;
+  text-shadow: none;
+}
+.navbar-inverse .navbar-brand:hover {
+  color: #ed303c;
+}
+.navbar-inverse .navbar-brand:focus {
+  color: #ed303c;
+}
+.navbar-inverse .navbar-brand:active {
+  color: #ed303c;
+}
+.navbar-inverse .navbar-nav > li > a {
+  color: #ed303c;
+  text-shadow: none;
+}
+.navbar-inverse .navbar-nav > li > a:hover {
+  color: #ed303c;
+}
+.navbar-inverse .navbar-nav > li > a:focus {
+  color: #ed303c;
+}
+.navbar-inverse .navbar-nav > li > a:active {
+  color: #ed303c;
+}
+.footer {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  margin-top: 100px;
+  color: #777;
+  text-align: center;
+  border-top: 1px solid #e5e5e5;
+}

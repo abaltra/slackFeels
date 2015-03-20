@@ -1,0 +1,43 @@
+<div ng-controller="HeaderCtrl">
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse"
+              data-target="#bs-example-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span><span
+        class="icon-bar"></span><span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">slack feels</a>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li ng-repeat="navItem in navItems">
+          <a href="{{navItem.url}}"><i class="{{navItem.cssClass}}"></i>&nbsp; {{navItem.title}}</a>
+        </li>
+      </ul>
+
+
+      <ul class="nav navbar-nav navbar-right">
+        <li ng-hide="currentUser">
+          <a href="/register">Sign Up</a>
+        </li>
+        <li ng-hide="currentUser">
+          <a href="/login">Log In</a>
+        </li>
+        <li ng-if="currentUser" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <span id="currentUserMenu" class="fa fa-user">&nbsp;{{currentUser.name}}</span> <b class="caret"></b></a>
+          <ul class="dropdown-menu" ng-if="isUser">
+            <li><a href="/profile"><span class="fa fa-cog"></span> My Profile</a></li>
+            <li><a href="/logout"><span class="fa fa-sign-out"></span> Logout</a></li>
+          </ul>
+          <ul class="dropdown-menu" ng-if="isAdmin">
+            <li><a href="/admin"><span class="fa fa-cog"></span> Admin</a></li>
+            <li><a href="/logout"><span class="fa fa-sign-out"></span> Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+  </nav>
+</div>

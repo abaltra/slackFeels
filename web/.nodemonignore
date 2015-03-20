@@ -1,0 +1,9 @@
+.tmp/**
+assets/**
+config/**
+node_modules/**
+tasks/**
+views/**
+bower.json
+package.json
+gulpfile.js

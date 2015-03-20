@@ -1,0 +1,38 @@
+<div class="container">
+
+  <div class="row" ng-if="!currentUser">
+    <div class="col-md-6 col-md-offset-3" style="text-align: center;">
+      <h1>meet slack on steroids</h1>
+    </div>
+  </div>
+
+  <div class="row" ng-if="currentUser">
+      
+    <div class="col-md-12">
+      <table class="table">
+        <thead>
+            <tr>
+              <th>#channels</th>
+              <th style="text-align: center;">Monday</th>
+              <th style="text-align: center;">Tuesday</th>
+              <th style="text-align: center;">Wednesday</th>
+              <th style="text-align: center;">Thursday</th>
+              <th style="text-align: center;">Friday</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr ng-repeat="t in stats.teams">
+                <td>
+                    {{t.name}}
+                </td>
+                <td ng-repeat="d in t.days" style="max-height: 96px; max-width: 96px;">
+                  <canvas id="pie" class="chart chart-pie" data="d.data" labels="labels" colours="colours" options="options"></canvas>
+                </td>
+              </tr>
+          </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>

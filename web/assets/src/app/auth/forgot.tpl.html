@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="col-md-4 col-md-offset-4">
+
+    <form role="form" name="form" ng-submit="submitted = true; forgot()" novalidate>
+      <div class="form-group">
+        <input type="email" class="form-control" id="email" name="email" placeholder="Email" ng-model="credentials.email" required>
+      </div>
+      <!--<button type="submit" class="btn btn-primary" ng-disabled="!form.modified || form.$invalid">Reset Password</button>-->
+      <button type="submit" class="btn btn-primary">Reset Password</button>
+      <div class="form-group" style="display: none;">
+        <label for="helper">Leave this field blank</label>
+        <input type="text" class="form-control" id="helper" name="helper" ng-model="credentials.helper"/>
+      </div>
+    </form>
+
+  </div>
+</div>
