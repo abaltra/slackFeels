@@ -44,3 +44,8 @@ execute 'pip install pymongo' do
 	command 'pip install -U pymongo'
 	action :run
 end
+
+execute 'pip install redis' do
+	command 'pip install -U redis'
+	action :run
+end

@@ -5,6 +5,7 @@ import json
 from textblob import TextBlob
 from pymongo import MongoClient
 import ConfigParser
+from utils import db_manager
 
 LOG_FORMAT = ('%(levelname) -2s %(asctime)s -5d: %(message)s')
 LOGGER = logging.getLogger(__name__)
@@ -112,8 +113,8 @@ class MessageConsumer(object):
         for sentence in blob.sentences:
             LOGGER.info('Sentence "%s"\'s polarity is %f', sentence, sentence.sentiment.polarity)
             added_polarity += sentence.sentiment.polarity
-        self._save_channel_data({'channel_id': channel, 'polarity': added_polarity/len(blob.sentences)})
-        self._save_message_info({'channel_id': channel, 'polarity': added_polarity/len(blob.sentences), 'timestamp': timestamp})
+        DB.save_channel_data({'channel_id': channel, 'polarity': added_polarity/len(blob.sentences)})
+        DB.save_message_info({'channel_id': channel, 'polarity': added_polarity/len(blob.sentences), 'timestamp': timestamp})
 
 
     def on_cancelok(self, unused_frame):
@@ -155,28 +156,7 @@ class MessageConsumer(object):
         LOGGER.info('Settings loaded')
 
     def _loadDB(self, settings):
-        try:
-            LOGGER.info('Loading database %s:%s/%s', settings.get('db', 'host'), settings.get('db', 'port'), settings.get('db', 'name'))
-            client = MongoClient(settings.get('db', 'host'), int(settings.get('db', 'port')))
-            return client[settings.get('db', 'name')]
-        except:
-            LOGGER.error('Could not load database')
-            self.stop();
-
-    def _save_channel_data(self, data_pack):
-        global SETTINGS, DB
-        collection = DB.channels
-        key = SETTINGS.get('organization', 'name') + ':' + data_pack.get('channel_id', 'fail_channel') + ':aggregated'
-        LOGGER.info('Saving data %s into %s:%s', data_pack, SETTINGS.get('db', 'name'), 'channels')
-        collection.update({ 'key': key },
-            {'$inc': {'total_messages': 1, 'polarity': data_pack.get('polarity', 0.0)}}, upsert=True)
-
-    def _save_message_info(self, data_pack):
-        global SETTINGS, DB
-        collection = DB.channels
-        key = SETTINGS.get('organization', 'name') + ':' + data_pack.get('channel_id', 'fail_channel')
-        LOGGER.info('Saving single message data: %s', json.dumps(data_pack))
-        collection.insert({'key': key, 'polarity': data_pack.get('polarity', 0.0), 'timestamp': data_pack.get('timestamp', 0.0)})
+        return db_manager.DBManager(settings, db_manager.DB_TYPES.REDIS)
 
 def main():
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
